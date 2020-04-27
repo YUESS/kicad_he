@@ -1,12 +1,12 @@
 ---
-typora-root-url: image
+typora-root-url: ./
 ---
 
 # kicad plugin(s)
 
 kicad 使用中编写的一些插件
 
-![sys](../sys.png)
+![sys](/sys.png)
 
 使用方法:  
     把*.py文件复制到 ~/.config/kicad/scripting/plugins/  
@@ -17,7 +17,7 @@ kicad 使用中编写的一些插件
 
 此功能方便打印出器件排布图，方便焊接
 
-![1](/1.png)
+![1](/image/1.png)
 
 
 
@@ -25,9 +25,9 @@ kicad 使用中编写的一些插件
 
 设有屏蔽项，可以屏蔽相关项的输出
 
-![2](/2.png)
+![2](/image/2.png)
 
-![4](/4.png)
+![4](/image/4.png)
 
 
 
@@ -35,8 +35,8 @@ kicad 使用中编写的一些插件
 
 设有屏蔽项，可以屏蔽相关项的输出
 
-![3](/3.png)
+![3](/image/3.png)
 
 
 
-![5](/5.png)
+![5](/image/5.png)
