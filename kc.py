@@ -30,7 +30,7 @@ import wx
 from pcbnew import ActionPlugin, GetBoard
 from platform import platform
 
-__version__ = "2.0"
+__version__ = "2.1"
 
 OUTPUT_DIR = 'output'# + os.path.sep + OUTPUT_NAME
 
@@ -38,8 +38,8 @@ EOL = u'\r\n'
 SEP = u' '
 JSEP = u'_'
 EMPTY_FIELD = u'~'
-HEADER = [u'Ref', u'Val',  u'Package', u'PosX', u'PosY', u'Rot', u'Side', u'SMD']
-BOM_HEADER = [u'Ref', u'Val',  u'Package', u'Quantity']
+HEADER = [u'Ref', u'Value',  u'Package', u'PosX', u'PosY', u'Rot', u'Side', u'SMD']
+BOM_HEADER = [u'Ref', u'Value',  u'Package', u'Quantity']
 
 REF = 0
 VAL = 1
@@ -393,8 +393,8 @@ class KC():
 
     def get_shtamp_str(self):
         return '# Author: ' + getpass.getuser() + \
-               ' | Timeshtamp: ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+ \
-               ' | Plugin: ' + __version__ + \
+               ' , Timeshtamp: ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+ \
+               ' , Plugin: ' + __version__ + \
                EOL
 
     def get_output_abs_path(self):

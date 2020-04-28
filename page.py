@@ -6,7 +6,7 @@ import sys
 import re
 import wx.grid
 
-from .kc import KC , HEADER, BOM_HEADER, REF
+from .kc import KC , HEADER, BOM_HEADER, VAL
 import pcbnew
 from pcbnew import ActionPlugin, GetBoard
 
@@ -233,7 +233,7 @@ class PositionPanel(wx.Panel):
         board = pcbnew.GetBoard()
         #board = pcbnew.LoadBoard("./ijw-E6001.kicad_pcb")
         posinfo, headinfo = KC().generalPosition(board)
-        posinfo_filter = IgnoreHandle(self.listData, posinfo, REF)
+        posinfo_filter = IgnoreHandle(self.listData, posinfo, VAL)
 
         KC().save_placement_info(board, posinfo_filter, headinfo,'SMT')
         dlg = wx.MessageDialog(self, "完成","aa", style=wx.OK)
@@ -250,7 +250,7 @@ class PositionPanel(wx.Panel):
         #board = pcbnew.LoadBoard("./ijw-E6001.kicad_pcb")
         board = pcbnew.GetBoard()
         posinfo, headinfo = KC().generalPosition(board)
-        posinfo_filter = IgnoreHandle(self.listData, posinfo, REF)
+        posinfo_filter = IgnoreHandle(self.listData, posinfo, VAL)
 
         KC().save_placement_info(board, posinfo_filter, headinfo,'ALL')
         dlg = wx.MessageDialog(self, "完成","aa", style=wx.OK)
@@ -268,7 +268,7 @@ class PositionPanel(wx.Panel):
         #board = pcbnew.LoadBoard("./ijw-E6001.kicad_pcb")
         board = pcbnew.GetBoard()
         posinfo, headinfo = KC().generalPosition(board)
-        posinfo_filter = IgnoreHandle(self.listData, posinfo, REF)
+        posinfo_filter = IgnoreHandle(self.listData, posinfo, VAL)
             
         if len(posinfo_filter) == 0:
             dlg = wx.MessageDialog(self, "无数据", style=wx.OK)
@@ -365,7 +365,7 @@ class BOMPanel(wx.Panel):
         board = pcbnew.GetBoard()
         #board = pcbnew.LoadBoard("./ijw-E6001.kicad_pcb")
         info, headinfo = KC().generalBOM(board)
-        info_filter = IgnoreHandle(self.listData, info, REF)
+        info_filter = IgnoreHandle(self.listData, info, VAL)
         headinfo.append('# Total: ' + str(len(info_filter)) + u'\r\n')
         group = CombingHandle(info_filter)
 
@@ -385,7 +385,7 @@ class BOMPanel(wx.Panel):
         #board = pcbnew.LoadBoard("./ijw-E6001.kicad_pcb")
         board = pcbnew.GetBoard()
         info, headinfo = KC().generalBOM(board)
-        info_filter = IgnoreHandle(self.listData, info, REF)
+        info_filter = IgnoreHandle(self.listData, info, VAL)
         headinfo.append('# Total: ' + str(len(info_filter)) + u'\r\n')
         group = CombingHandle(info_filter)
         #print(group)
