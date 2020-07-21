@@ -9,6 +9,7 @@ import wx.grid
 from .kc import KC , HEADER, BOM_HEADER, VAL
 import pcbnew
 from pcbnew import ActionPlugin, GetBoard
+import os
 
 class PosViewGrid(wx.Frame):
     def __init__(self, parent, id, title,pos=wx.DefaultPosition,
@@ -121,7 +122,6 @@ class BomViewGrid(wx.Frame):
 class ShowPanel(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent, -1, size=(390,500))
-        #wx.Panel.__init__(self, parent, -1)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         b = wx.Button(self, -1, "隐藏元件值")
@@ -136,6 +136,11 @@ class ShowPanel(wx.Panel):
         b = wx.Button(self, -1, "设置元件参考")
         self.Bind(wx.EVT_BUTTON, self.OnSetRef, b)
         sizer.Add(b, 0, wx.ALIGN_CENTRE_VERTICAL|wx.ALL|wx.EXPAND, 5)
+
+        b = wx.Button(self, -1, "设置元件值大小")
+        self.Bind(wx.EVT_BUTTON, self.OnSetValueSize, b)
+        sizer.Add(b, 0, wx.ALIGN_CENTRE_VERTICAL|wx.ALL|wx.EXPAND, 5)
+
         self.SetSizer(sizer)
         x,y = sizer.Fit(self)
         self.Fit()
@@ -162,6 +167,11 @@ class ShowPanel(wx.Panel):
     def OnSetRef(self, evt):
         board = pcbnew.GetBoard()
         KC().setRefSize(board)
+        pcbnew.Refresh() #Show up newly added vias
+
+    def OnSetValueSize(self, evt):
+        board = pcbnew.GetBoard()
+        KC().setValueSize(board)
         pcbnew.Refresh() #Show up newly added vias
 
 class PositionPanel(wx.Panel):
@@ -208,6 +218,8 @@ class PositionPanel(wx.Panel):
         self.SetSizer(sizer)
         sizer.Fit(self)
 
+        LoadListValue(self.list)
+
     def Onlistadd(self, evt):
         dlg = wx.TextEntryDialog(None,
                 "请输入需要屏蔽的项(支持*匹配)",
@@ -215,12 +227,16 @@ class PositionPanel(wx.Panel):
         if dlg.ShowModal() == wx.ID_OK:
             self.list.Append(dlg.GetValue())
 
+            SaveListValue(self.list)
+
         dlg.Destroy()
 
     def Onlistdel(self, evt):
         sel = self.list.GetSelection()
         if sel != -1:
             self.list.Delete(sel)
+            #delete
+            SaveListValue(self.list)
 
     def OnSMDpos(self, evt):
         num = self.list.GetCount()
@@ -279,6 +295,35 @@ class PositionPanel(wx.Panel):
                     style = wx.DEFAULT_FRAME_STYLE, 
                     data = posinfo_filter, head = HEADER, info = headinfo)
             win.Show(True)
+
+
+#保存屏蔽项
+def SaveListValue(list, path='/.config/kicad/scripting', file='he'):
+    s = os.getcwd()
+    posfilepath = s + path
+    posfile = posfilepath + '/' + file
+
+    if not os.path.exists(posfilepath):
+        return
+
+    fd= open(posfile, 'w')
+    num = list.GetCount()
+    for i in range(num):
+        listvalue = list.GetString(i)
+        fd.write(listvalue)
+        fd.write('\n')
+    fd.close()
+
+#加载屏蔽项
+def LoadListValue(list, path='/.config/kicad/scripting', file='he'):
+    f = os.getcwd() + path + '/' + file
+    if not os.path.exists(f):
+        return
+
+    fd = open(f)
+    for line in fd:
+        line = line.strip('\n')  #去掉换行符
+        list.Append(line)
 
 def IgnoreHandle(igitem, data, index = 0):
     # 每个元素头和尾 加入^ $字符
@@ -341,6 +386,8 @@ class BOMPanel(wx.Panel):
         self.SetSizer(sizer)
         sizer.Fit(self)
 
+        LoadListValue(self.list)
+
     def Onlistadd(self, evt):
         dlg = wx.TextEntryDialog(None,
                 "请输入需要屏蔽的项(支持*匹配)",
@@ -348,12 +395,15 @@ class BOMPanel(wx.Panel):
         if dlg.ShowModal() == wx.ID_OK:
             self.list.Append(dlg.GetValue())
 
+            SaveListValue(self.list)
+
         dlg.Destroy()
 
     def Onlistdel(self, evt):
         sel = self.list.GetSelection()
         if sel != -1:
             self.list.Delete(sel)
+            SaveListValue(self.list)
 
     def OnGenBOM(self, evt):
         num = self.list.GetCount()
@@ -448,7 +498,6 @@ class sYsNB(wx.Notebook):
 
         self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnPageChanged)
         self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING, self.OnPageChanging)
-
 
     def OnPageChanged(self, event):
         if self:

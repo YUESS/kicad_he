@@ -30,7 +30,7 @@ import wx
 from pcbnew import ActionPlugin, GetBoard
 from platform import platform
 
-__version__ = "2.1"
+__version__ = "2.2"
 
 OUTPUT_DIR = 'output'# + os.path.sep + OUTPUT_NAME
 
@@ -141,8 +141,19 @@ class KC():
 
         for module in self.board.GetModules():
             module.Reference().SetThickness(80000)
-            module.Reference().SetTextWidth(500000)
-            module.Reference().SetTextHeight(500000)
+            module.Reference().SetTextWidth(650000)
+            module.Reference().SetTextHeight(650000)
+
+    def setValueSize(self, board = None):
+        if board == None:
+            board = GetBoard()
+
+        self.board = board
+        for module in self.board.GetModules():
+            module.Value().SetThickness(150000)
+            module.Value().SetTextWidth(800000)
+            module.Value().SetTextHeight(800000)
+
     def setValueDisVisible(self, board = None):
         if board == None:
             board = GetBoard()
@@ -160,6 +171,7 @@ class KC():
         origin = self.board.GetAuxOrigin()
         for module in self.board.GetModules():
             reference = module.GetReference()
+            #print(module.Reference().GetPosition())
 
             if self.is_non_annotated_ref(reference):
                 continue
@@ -177,6 +189,8 @@ class KC():
             value = module.Value()
             value.SetVisible(True)
             lay = value.GetLayer()
+
+            #print(module.GetValue())
             #print(pcbnew.B_CrtYd)
             #print(pcbnew.F_CrtYd)
             #print(pcbnew.B_Fab)
