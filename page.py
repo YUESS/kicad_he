@@ -247,7 +247,6 @@ class PositionPanel(wx.Panel):
             self.listData.append(listvalue)
 
         board = pcbnew.GetBoard()
-        #board = pcbnew.LoadBoard("./ijw-E6001.kicad_pcb")
         posinfo, headinfo = KC().generalPosition(board)
         posinfo_filter = IgnoreHandle(self.listData, posinfo, VAL)
 
@@ -298,15 +297,12 @@ class PositionPanel(wx.Panel):
 
 
 #保存屏蔽项
-def SaveListValue(list, path='/.config/kicad/scripting', file='he'):
-    s = os.getcwd()
-    posfilepath = s + path
-    posfile = posfilepath + '/' + file
+def SaveListValue(list, fs='he.mk'):
+    path = KC().get_output_abs_path()
+    KC().mkdir_out(path)
 
-    if not os.path.exists(posfilepath):
-        return
-
-    fd= open(posfile, 'w')
+    file = path + '/' + fs
+    fd= open(file, 'w')
     num = list.GetCount()
     for i in range(num):
         listvalue = list.GetString(i)
@@ -315,12 +311,14 @@ def SaveListValue(list, path='/.config/kicad/scripting', file='he'):
     fd.close()
 
 #加载屏蔽项
-def LoadListValue(list, path='/.config/kicad/scripting', file='he'):
-    f = os.getcwd() + path + '/' + file
-    if not os.path.exists(f):
+def LoadListValue(list, fs='he.mk'):
+    path = KC().get_output_abs_path()
+    file = path + '/' + fs
+
+    if not os.path.exists(file):
         return
 
-    fd = open(f)
+    fd = open(file)
     for line in fd:
         line = line.strip('\n')  #去掉换行符
         list.Append(line)
@@ -432,13 +430,11 @@ class BOMPanel(wx.Panel):
             listvalue = self.list.GetString(i)
             self.listData.append(listvalue)
 
-        #board = pcbnew.LoadBoard("./ijw-E6001.kicad_pcb")
         board = pcbnew.GetBoard()
         info, headinfo = KC().generalBOM(board)
         info_filter = IgnoreHandle(self.listData, info, VAL)
         headinfo.append('# Total: ' + str(len(info_filter)) + u'\r\n')
         group = CombingHandle(info_filter)
-        #print(group)
 
         if len(group) == 0:
             dlg = wx.MessageDialog(self, "无数据", style=wx.OK)

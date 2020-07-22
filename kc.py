@@ -30,7 +30,7 @@ import wx
 from pcbnew import ActionPlugin, GetBoard
 from platform import platform
 
-__version__ = "2.2"
+__version__ = "2.3"
 
 OUTPUT_DIR = 'output'# + os.path.sep + OUTPUT_NAME
 
@@ -219,7 +219,9 @@ class KC():
         self.headinfo = []
         shtamp = self.get_shtamp_str()
         self.headinfo.append(shtamp)
-        name = '# File name: ' + self.get_board_name() + EOL
+
+        ver = self.board.GetTitleBlock().GetRevision()
+        name = '# File name: ' + self.get_board_name() + '  Revision: ' + ver + EOL
         self.headinfo.append(name)
 
     def generalPosition(self, board = None):
@@ -237,7 +239,8 @@ class KC():
         shtamp = self.get_shtamp_str()
         self.headinfo.append(shtamp)
 
-        name = '# File name: ' + self.get_board_name() + EOL
+        ver = self.board.GetTitleBlock().GetRevision()
+        name = '# File name: ' + self.get_board_name() + '  Revision: ' + ver + EOL
         self.headinfo.append(name)
 
         total1 = '# Total(All): ' + str(self.numALL) + EOL
@@ -362,7 +365,9 @@ class KC():
         path = self.get_output_abs_path()
         name = path + os.path.sep + self.get_board_name()
 
-        pos_file = open(name + u'-' + type + u'.csv', mode='w')
+        ver = self.board.GetTitleBlock().GetRevision()
+
+        pos_file = open(name +  u'-' + ver + u'-' + type +u'.csv', mode='w')
         for item in self.headinfo:
             pos_file.write(item)
 
@@ -386,7 +391,9 @@ class KC():
         path = self.get_output_abs_path()
         name = path + os.path.sep + self.get_board_name()
 
-        pos_file = open(name + u'-' + type + u'.pos', mode='w')
+        ver = self.board.GetTitleBlock().GetRevision()
+
+        pos_file = open(name + u'-' + ver + u'-' + type+ u'.pos', mode='w')
         for item in self.headinfo:
             pos_file.write(item)
 
@@ -412,11 +419,12 @@ class KC():
                EOL
 
     def get_output_abs_path(self):
+        self.board = GetBoard()
         path = os.path.dirname(os.path.abspath(self.board.GetFileName()))
         return path + os.path.sep + OUTPUT_DIR
 
     def get_board_name(self):
-        name = self.board.GetTitleBlock().GetComment1()
+        name = self.board.GetTitleBlock().GetComment(0)
         if name == '':
             name = os.path.splitext(os.path.basename(self.board.GetFileName()))[0]
         return name
