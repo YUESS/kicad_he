@@ -128,10 +128,9 @@ class ShowPanel(wx.Panel):
         sizer.Add(b, 0, wx.ALIGN_CENTRE_VERTICAL|wx.ALL|wx.EXPAND, 5)
         self.Bind(wx.EVT_BUTTON, self.OnHideValue, b)
 
-
-        b = wx.Button(self, -1, "移动元件值")
-        self.Bind(wx.EVT_BUTTON, self.OnMoveValue, b)
-        sizer.Add(b, 0, wx.ALIGN_CENTRE_VERTICAL|wx.ALL|wx.EXPAND, 5)
+        #b = wx.Button(self, -1, "移动元件值")
+        #self.Bind(wx.EVT_BUTTON, self.OnMoveValue, b)
+        #sizer.Add(b, 0, wx.ALIGN_CENTRE_VERTICAL|wx.ALL|wx.EXPAND, 5)
 
         b = wx.Button(self, -1, "设置元件参考")
         self.Bind(wx.EVT_BUTTON, self.OnSetRef, b)
@@ -165,14 +164,146 @@ class ShowPanel(wx.Panel):
         pcbnew.Refresh() #Show up newly added vias
 
     def OnSetRef(self, evt):
-        board = pcbnew.GetBoard()
-        KC().setRefSize(board)
-        pcbnew.Refresh() #Show up newly added vias
+        dlg = InputDialog(self, -1, "Reference Size", size=(350, 200),
+                                 style=wx.DEFAULT_DIALOG_STYLE,
+                                 )
+        dlg.CenterOnScreen()
+
+        # this does not return until the dialog is closed.
+        val = dlg.ShowModal()
+
+        if val == wx.ID_OK:
+            value = dlg.GetValues()
+
+            board = pcbnew.GetBoard()
+            KC().setRefSize(board, value)
+            pcbnew.Refresh() #Show up newly added vias
+
+            #print(value)
+        else:
+            pass
+
+        dlg.Destroy()
 
     def OnSetValueSize(self, evt):
-        board = pcbnew.GetBoard()
-        KC().setValueSize(board)
-        pcbnew.Refresh() #Show up newly added vias
+        dlg = InputDialog(self, -1, "Value Size", size=(350, 200),
+                                 style=wx.DEFAULT_DIALOG_STYLE,
+                                 )
+        dlg.CenterOnScreen()
+
+        # this does not return until the dialog is closed.
+        val = dlg.ShowModal()
+
+        if val == wx.ID_OK:
+            value = dlg.GetValues()
+            board = pcbnew.GetBoard()
+            KC().setValueSize(board, value)
+            pcbnew.Refresh() #Show up newly added vias
+        else:
+            pass
+
+        dlg.Destroy()
+
+class InputDialog(wx.Dialog):
+    def __init__(
+            self, parent, id, title, size=wx.DefaultSize, pos=wx.DefaultPosition,
+            style=wx.DEFAULT_DIALOG_STYLE, name='dialog'
+            ):
+
+        # Instead of calling wx.Dialog.__init__ we precreate the dialog
+        # so we can set an extra style that must be set before
+        # creation, and then we create the GUI object using the Create
+        # method.
+        wx.Dialog.__init__(self)
+        self.SetExtraStyle(wx.DIALOG_EX_CONTEXTHELP)
+        self.Create(parent, id, title, pos, size, style, name)
+
+        # Now continue with the normal construction of the dialog
+        # contents
+        sizer = wx.BoxSizer(wx.VERTICAL)
+
+        #label = wx.StaticText(self, -1, "This is a wx.Dialog")
+        #label.SetHelpText("This is the help text for the label")
+        #sizer.Add(label, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
+
+
+        if title == "Reference Size":
+            W = "0.7"
+            H = "0.7"
+            T = "0.08"
+        elif title == "Value Size":
+            W = "1"
+            H = "1"
+            T = "0.15"
+        else:
+            W = "1"
+            H = "1"
+            T = "0.15"
+
+
+        box = wx.BoxSizer(wx.HORIZONTAL)
+
+        label = wx.StaticText(self, -1, "宽(mm)  ：")
+        label.SetHelpText("This is the help text for the label")
+        box.Add(label, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
+
+        self.text1 = wx.TextCtrl(self, -1, W, size=(80,-1))
+        self.text1.SetHelpText("Here's some help text for field #1")
+        box.Add(self.text1, 1, wx.ALIGN_CENTRE|wx.ALL, 5)
+
+        sizer.Add(box, 0, wx.EXPAND|wx.ALL, 5)
+
+
+        box = wx.BoxSizer(wx.HORIZONTAL)
+
+        label = wx.StaticText(self, -1, "高(mm)  ：")
+        #label.SetHelpText("This is the help text for the label")
+        box.Add(label, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
+
+        self.text2 = wx.TextCtrl(self, -1, H, size=(80,-1))
+        #self.text2.SetHelpText("Here's some help text for field #1")
+        box.Add(self.text2, 1, wx.ALIGN_CENTRE|wx.ALL, 5)
+        sizer.Add(box, 0, wx.EXPAND|wx.ALL, 5)
+
+        box = wx.BoxSizer(wx.HORIZONTAL)
+
+        label = wx.StaticText(self, -1, "粗细(mm) :")
+        #label.SetHelpText("This is the help text for the label")
+        box.Add(label, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
+
+        self.text3 = wx.TextCtrl(self, -1, T, size=(80,-1))
+        #self.text3.SetHelpText("Here's some help text for field #2")
+        box.Add(self.text3, 1, wx.ALIGN_CENTRE|wx.ALL, 5)
+        sizer.Add(box, 0, wx.EXPAND|wx.ALL, 5)
+
+        line = wx.StaticLine(self, -1, size=(20,-1), style=wx.LI_HORIZONTAL)
+        sizer.Add(line, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
+
+        btnsizer = wx.StdDialogButtonSizer()
+
+        
+
+        if wx.Platform != "__WXMSW__":
+            btn = wx.ContextHelpButton(self)
+            btnsizer.AddButton(btn)
+
+        btn = wx.Button(self, wx.ID_OK)
+        #btn.SetHelpText("The OK button completes the dialog")
+        btn.SetDefault()
+        btnsizer.AddButton(btn)
+
+        btn = wx.Button(self, wx.ID_CANCEL)
+        btn.SetHelpText("The Cancel button cancels the dialog. (Cool, huh?)")
+        btnsizer.AddButton(btn)
+        btnsizer.Realize()
+
+        sizer.Add(btnsizer, 0, wx.ALL, 5)
+
+        self.SetSizer(sizer)
+        sizer.Fit(self)
+
+    def GetValues(self):
+        return (self.text1.GetLineText(0), self.text2.GetLineText(0), self.text3.GetLineText(0))
 
 class PositionPanel(wx.Panel):
     def __init__(self, parent):

@@ -27,7 +27,6 @@ class kcDialog(wx.Dialog):
         self.SetTitle("sYs (v{0})".format(__version__))
         p = wx.Panel(self)
         nb = sYsNB(p, -1)
-        #nb = sYsnoteBook(p)
         bs = wx.BoxSizer(wx.VERTICAL)
         bs.Add(nb, 1, wx.EXPAND|wx.ALL, 5)
         p.SetSizer(bs)

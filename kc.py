@@ -30,7 +30,7 @@ import wx
 from pcbnew import ActionPlugin, GetBoard
 from platform import platform
 
-__version__ = "2.3"
+__version__ = "2.4"
 
 OUTPUT_DIR = 'output'# + os.path.sep + OUTPUT_NAME
 
@@ -133,26 +133,26 @@ TRANSLATE_TABLE = {
 }
 
 class KC():
-    def setRefSize(self, board = None):
+    def setRefSize(self, board = None, val = (0.7, 0.7, 0.08)):
         if board == None:
             board = GetBoard()
 
         self.board = board
 
         for module in self.board.GetModules():
-            module.Reference().SetThickness(80000)
-            module.Reference().SetTextWidth(650000)
-            module.Reference().SetTextHeight(650000)
+            module.Reference().SetTextWidth(int(float(val[1])*1000000))
+            module.Reference().SetTextHeight(int(float(val[0])*1000000))
+            module.Reference().SetThickness(int(float(val[2])*1000000))
 
-    def setValueSize(self, board = None):
+    def setValueSize(self, board = None, val = (1, 1, 0.15)):
         if board == None:
             board = GetBoard()
 
         self.board = board
         for module in self.board.GetModules():
-            module.Value().SetThickness(150000)
-            module.Value().SetTextWidth(800000)
-            module.Value().SetTextHeight(800000)
+            module.Value().SetTextWidth(int(float(val[1])*1000000))
+            module.Value().SetTextHeight(int(float(val[0])*1000000))
+            module.Value().SetThickness(int(float(val[2])*1000000))
 
     def setValueDisVisible(self, board = None):
         if board == None:
