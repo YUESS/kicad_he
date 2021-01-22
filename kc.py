@@ -30,7 +30,7 @@ import wx
 from pcbnew import ActionPlugin, GetBoard
 from platform import platform
 
-__version__ = "2.4"
+__version__ = "2.5 for kicad v6"
 
 OUTPUT_DIR = 'output'# + os.path.sep + OUTPUT_NAME
 
@@ -139,20 +139,20 @@ class KC():
 
         self.board = board
 
-        for module in self.board.GetModules():
+        for module in self.board.GetFootprints():
             module.Reference().SetTextWidth(int(float(val[1])*1000000))
             module.Reference().SetTextHeight(int(float(val[0])*1000000))
-            module.Reference().SetThickness(int(float(val[2])*1000000))
+            module.Reference().SetTextThickness(int(float(val[2])*1000000))
 
     def setValueSize(self, board = None, val = (1, 1, 0.15)):
         if board == None:
             board = GetBoard()
 
         self.board = board
-        for module in self.board.GetModules():
+        for module in self.board.GetFootprints():
             module.Value().SetTextWidth(int(float(val[1])*1000000))
             module.Value().SetTextHeight(int(float(val[0])*1000000))
-            module.Value().SetThickness(int(float(val[2])*1000000))
+            module.Value().SetTextThickness(int(float(val[2])*1000000))
 
     def setValueDisVisible(self, board = None):
         if board == None:
@@ -160,7 +160,7 @@ class KC():
 
         self.board = board
 
-        for module in self.board.GetModules():
+        for module in self.board.GetFootprints():
             module.Value().SetVisible(False)
 
     def setValueOnOtherLayer(self,board = None):
@@ -169,7 +169,7 @@ class KC():
 
         self.board = board
         origin = self.board.GetAuxOrigin()
-        for module in self.board.GetModules():
+        for module in self.board.GetFootprints():
             reference = module.GetReference()
             #print(module.Reference().GetPosition())
 
@@ -200,7 +200,7 @@ class KC():
             elif lay == pcbnew.B_Fab:
                 value.SetLayer(pcbnew.B_CrtYd)
 
-            value.SetThickness(80000)
+            value.SetTextThickness(80000)
             value.SetTextWidth(500000)
             value.SetTextHeight(500000)
             mpos = module.GetPosition()
@@ -255,7 +255,7 @@ class KC():
 
         origin = self.board.GetAuxOrigin()
 
-        for module in self.board.GetModules():
+        for module in self.board.GetFootprints():
             reference = module.GetReference()
 
             if self.is_non_annotated_ref(reference):
@@ -304,7 +304,7 @@ class KC():
     def get_bom_info(self):
         self.info = []
         self.cnt = 0
-        for module in self.board.GetModules():
+        for module in self.board.GetFootprints():
             reference = module.GetReference()
 
             if self.is_non_annotated_ref(reference):
